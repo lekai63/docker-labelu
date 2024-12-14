@@ -1,45 +1,47 @@
-FROM python:3.11-slim AS builder
+# FROM python:3.11-slim AS builder
 
-# Version numbers as build args
-ARG FRONTEND_VERSION
-ARG BACKEND_VERSION
+# # Version numbers as build args
+# ARG FRONTEND_VERSION
+# ARG BACKEND_VERSION
 
-RUN rm /etc/apt/sources.list.d/debian.sources
+# RUN rm /etc/apt/sources.list.d/debian.sources
 
-RUN echo "deb https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib" > /etc/apt/sources.list
+# RUN echo "deb https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib" > /etc/apt/sources.list
 
-RUN echo $BACKEND_VERSION
+# RUN echo $BACKEND_VERSION
 
-RUN apt-get update && apt-get install -y wget unzip
+# RUN apt-get update && apt-get install -y wget unzip
 
-WORKDIR /labelu
+# WORKDIR /labelu
 
-COPY . .
+# COPY . .
 
-# Add verbose output and error checking
-RUN wget -v --show-progress https://github.com/opendatalab/labelU-Kit/releases/download/v${FRONTEND_VERSION}/frontend.zip -O frontend.zip && \
-    mkdir -p labelu/internal/statics && \
-    unzip -o frontend.zip && \
-    cp -r dist/* labelu/internal/statics/ && \
-    rm frontend.zip
+# # Add verbose output and error checking
+# RUN wget -v --show-progress https://github.com/opendatalab/labelU-Kit/releases/download/v${FRONTEND_VERSION}/frontend.zip -O frontend.zip && \
+#     mkdir -p labelu/internal/statics && \
+#     unzip -o frontend.zip && \
+#     cp -r dist/* labelu/internal/statics/ && \
+#     rm frontend.zip
 
-RUN pip install poetry -i https://mirrors.aliyun.com/pypi/simple/ && \
-    poetry source add --priority=default mirrors https://mirrors.aliyun.com/pypi/simple/ && \
-    poetry build
+# RUN pip install poetry -i https://mirrors.aliyun.com/pypi/simple/ && \
+#     poetry source add --priority=default mirrors https://mirrors.aliyun.com/pypi/simple/ && \
+#     poetry build
 
-ENV BACKEND_VERSION=$BACKEND_VERSION
+# ENV BACKEND_VERSION=$BACKEND_VERSION
 
 FROM python:3.11-slim
 
-ARG BACKEND_VERSION
-ENV BACKEND_VERSION=$BACKEND_VERSION
+# ARG BACKEND_VERSION
+# ENV BACKEND_VERSION=$BACKEND_VERSION
 
-WORKDIR /labelu
+# WORKDIR /labelu
 
-COPY --from=builder /labelu/dist/labelu-${BACKEND_VERSION}-py3-none-any.whl .
+# COPY --from=builder /labelu/dist/labelu-${BACKEND_VERSION}-py3-none-any.whl .
 
-RUN pip3 install labelu-${BACKEND_VERSION}-py3-none-any.whl -i https://mirrors.aliyun.com/pypi/simple/ && \
-    rm labelu-${BACKEND_VERSION}-py3-none-any.whl
+# RUN pip3 install labelu-${BACKEND_VERSION}-py3-none-any.whl -i https://mirrors.aliyun.com/pypi/simple/ && \
+#     rm labelu-${BACKEND_VERSION}-py3-none-any.whl
+
+RUN pip3 install labelu
 
 # Changed ENV syntax to key=value format
 ENV MEDIA_HOST=http://localhost:8000
