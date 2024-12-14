@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   workflow_dispatch:
     inputs:
-      frontend_version:
-        description: 'Frontend Version (e.g. 5.5.1)'
-        required: true
-        type: string
+      # frontend_version:
+      #   description: 'Frontend Version (e.g. 5.5.1)'
+      #   required: true
+      #   type: string
       backend_version:
         description: 'Backend Version (e.g. 1.1.1)'
         required: true
@@ -44,8 +44,8 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.backend_version }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          build-args: |
-            FRONTEND_VERSION=${{ inputs.frontend_version }}
-            BACKEND_VERSION=${{ inputs.backend_version }}
+          # build-args: |
+          #   FRONTEND_VERSION=${{ inputs.frontend_version }}
+          #   BACKEND_VERSION=${{ inputs.backend_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
