@@ -1,4 +1,4 @@
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 # Version numbers as build args
 ARG FRONTEND_VERSION
@@ -16,9 +16,10 @@ WORKDIR /labelu
 
 COPY . .
 
-# Construct frontend URL from version
-RUN wget https://github.com/opendatalab/labelU-Kit/releases/download/v${FRONTEND_VERSION}/frontend.zip -O frontend.zip && \
-    unzip frontend.zip && \
+# Add verbose output and error checking
+RUN wget -v --show-progress https://github.com/opendatalab/labelU-Kit/releases/download/v${FRONTEND_VERSION}/frontend.zip -O frontend.zip && \
+    mkdir -p labelu/internal/statics && \
+    unzip -o frontend.zip && \
     cp -r dist/* labelu/internal/statics/ && \
     rm frontend.zip
 
@@ -40,8 +41,8 @@ COPY --from=builder /labelu/dist/labelu-${BACKEND_VERSION}-py3-none-any.whl .
 RUN pip3 install labelu-${BACKEND_VERSION}-py3-none-any.whl -i https://mirrors.aliyun.com/pypi/simple/ && \
     rm labelu-${BACKEND_VERSION}-py3-none-any.whl
 
-# You can set the media host to your own host
-ENV MEDIA_HOST http://localhost:8000
+# Changed ENV syntax to key=value format
+ENV MEDIA_HOST=http://localhost:8000
 
 EXPOSE 8000
 
